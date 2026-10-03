@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your LinkedIn Audit, Michael</title>
+<style>
+  :root{
+    --paper:#F7F4EF;
+    --paper2:#EFEAE1;
+    --ink:#141B26;
+    --ink2:#59616D;
+    --line:#E2DCD0;
+    --navy:#0E1B2E;
+    --heart:#E8435F;
+    --heart-soft:#FBE7EB;
+    --green:#1F6F4A;
+    --card:#FFFFFF;
+    --radius:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;font-size:16px;
+  }
+  .serif{font-family:Georgia,"Times New Roman",serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  #progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--heart);z-index:200;transition:width .15s linear;}
+
+  header{
+    position:fixed;top:3px;left:0;right:0;z-index:100;
+    background:rgba(247,244,239,.93);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;}
+  .brand{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);font-weight:600;}
+  .brand b{color:var(--heart);}
+  nav{display:flex;gap:4px;}
+  nav a{font-size:13px;color:var(--ink2);text-decoration:none;padding:6px 10px;border-radius:99px;transition:.2s;}
+  nav a:hover{background:var(--heart-soft);color:var(--ink);}
+  @media(max-width:820px){nav{display:none;}}
+
+  section{padding:88px 0;}
+  .eyebrow{display:inline-block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--heart);font-weight:700;margin-bottom:16px;}
+  h1,h2{font-family:Georgia,serif;font-weight:600;line-height:1.15;letter-spacing:-.01em;}
+  h1{font-size:clamp(34px,5.4vw,58px);max-width:840px;}
+  h2{font-size:clamp(26px,3.6vw,40px);max-width:740px;margin-bottom:14px;}
+  .sub{color:var(--ink2);font-size:17px;max-width:660px;margin-top:16px;}
+  .rule{width:56px;height:3px;background:var(--heart);border-radius:99px;margin:28px 0;}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+  #hero{padding:150px 0 72px;background:linear-gradient(180deg,#FFF 0%,var(--paper) 100%);}
+  .hero-tag{
+    display:inline-flex;align-items:center;gap:8px;background:var(--heart-soft);color:var(--heart);
+    font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:7px 14px;border-radius:99px;margin-bottom:22px;
+  }
+  .analyzed{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+  .analyzed span{font-size:13px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:6px 13px;border-radius:99px;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:56px;}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;}
+  .stat .n{font-family:Georgia,serif;font-size:30px;color:var(--heart);font-weight:600;line-height:1.15;}
+  .stat .l{font-size:13.5px;color:var(--ink2);margin-top:6px;}
+
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:40px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .25s ease,box-shadow .25s ease;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,27,38,.08);}
+  .card .num{font-family:Georgia,serif;font-size:15px;color:var(--heart);font-weight:700;margin-bottom:12px;}
+  .card h3{font-size:18px;margin-bottom:10px;line-height:1.35;}
+  .card p{font-size:14.5px;color:var(--ink2);}
+  .card .why{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--ink);}
+  .card .why b{color:var(--heart);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px;}
+
+  .flow{display:flex;flex-direction:column;gap:14px;margin-top:40px;max-width:760px;}
+  .flow-row{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;}
+  .flow-row .tag{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding-top:3px;}
+  .tag.now{color:var(--ink2);}
+  .tag.prob{color:#B4531F;}
+  .tag.new{color:var(--green);}
+  .flow-row .txt{font-size:16px;}
+  .arrow{align-self:center;color:var(--heart);font-size:20px;margin:-4px 0 -4px 66px;}
+  @media(max-width:640px){.flow-row{grid-template-columns:1fr;gap:8px;}.arrow{margin-left:24px;}}
+
+  .ba{margin-top:40px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);}
+  .ba-row{display:grid;grid-template-columns:170px 1fr 34px 1fr;}
+  .ba-row:not(:last-child){border-bottom:1px solid var(--line);}
+  .ba-row>div{padding:20px 22px;}
+  .ba-row .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);font-weight:700;background:var(--paper2);display:flex;align-items:center;}
+  .ba-row .b{font-size:14.5px;color:#8A8378;}
+  .ba-row .mid{display:flex;align-items:center;justify-content:center;color:var(--heart);font-weight:700;background:var(--paper2);}
+  .ba-row .a{font-size:14.5px;color:var(--ink);font-weight:500;}
+  @media(max-width:760px){
+    .ba-row{grid-template-columns:1fr;}
+    .ba-row .mid{padding:0 22px 6px;justify-content:flex-start;background:#fff;}
+    .ba-row .k{padding-bottom:4px;}
+  }
+
+  .copybox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px;margin-top:28px;position:relative;}
+  .copybox .inner{white-space:pre-wrap;font-size:15px;line-height:1.75;color:var(--ink);}
+  .copybtn{display:inline-flex;align-items:center;gap:7px;border:none;cursor:pointer;background:var(--navy);color:#fff;font-size:13px;font-weight:600;padding:9px 18px;border-radius:99px;transition:.2s;margin-top:20px;}
+  .copybtn:hover{background:var(--heart);}
+  .copybtn.done{background:var(--green);}
+  .copyhead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
+  .copyhead .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);font-weight:700;}
+
+  .hl{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin-top:16px;display:grid;grid-template-columns:44px 1fr;gap:18px;transition:transform .2s ease,box-shadow .2s ease;}
+  .hl:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(20,27,38,.08);}
+  .hl .idx{width:44px;height:44px;border-radius:50%;background:var(--paper2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;font-size:18px;}
+  .hl.reco{border:2px solid var(--heart);}
+  .hl.reco .idx{background:var(--heart);color:#fff;}
+  .hl .reco-badge{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--heart);background:var(--heart-soft);padding:4px 10px;border-radius:99px;margin-bottom:8px;}
+  .hl .h-txt{font-size:16.5px;font-weight:600;line-height:1.5;}
+  .hl .h-idea{font-size:14px;color:var(--ink2);margin-top:10px;}
+  .hl .h-why{font-size:13.5px;margin-top:8px;color:var(--ink);}
+  .hl .h-why b{color:var(--heart);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-right:6px;}
+
+  .post-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px;margin-top:28px;}
+  .post-body{white-space:pre-wrap;font-size:15.5px;line-height:1.8;}
+
+  .themes{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+  .theme{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:14px;}
+  .theme b{display:block;font-size:13px;}
+  .theme span{font-size:12.5px;color:var(--ink2);}
+
+  .banner-mock{margin-top:28px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);aspect-ratio:4/1;position:relative;background:linear-gradient(115deg,#0E1B2E 0%,#16263D 60%,#22344E 100%);display:flex;align-items:center;padding:0 6%;}
+  .banner-mock .bm-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#F08CA0;font-weight:700;margin-bottom:8px;}
+  .banner-mock .bm-main{font-family:Georgia,serif;color:#fff;font-size:clamp(16px,3.2vw,30px);line-height:1.25;font-weight:600;max-width:80%;}
+  .banner-mock .bm-main em{color:#F0546E;font-style:normal;}
+  .banner-mock .bm-sub{color:#A9B4C2;font-size:clamp(10px,1.4vw,14px);margin-top:10px;max-width:70%;}
+  @media(max-width:640px){.banner-mock{aspect-ratio:16/9;}}
+
+  .gift{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:36px;}
+  .gift .g{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;}
+  .gift .g .tick{color:var(--green);font-weight:800;font-size:18px;}
+  .gift .g b{display:block;margin:8px 0 6px;font-size:15.5px;}
+  .gift .g span{font-size:13.5px;color:var(--ink2);}
+
+  #cta{background:var(--navy);color:#E8E4DC;}
+  #cta h2{color:#fff;}
+  #cta .sub{color:#A9B4C2;}
+  .cta-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:36px;margin-top:36px;}
+  .cta-q{font-family:Georgia,serif;font-size:clamp(19px,2.6vw,26px);line-height:1.45;color:#fff;}
+  .cta-q em{color:#F0546E;font-style:normal;}
+  .cta-opts{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+  .cta-opts span{border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:8px 18px;font-size:14px;color:#E8E4DC;}
+
+  footer{background:#0A111C;color:#8D95A1;padding:56px 0;font-size:13px;}
+  footer h4{color:#D5DAE2;font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;}
+  footer .src{display:flex;flex-direction:column;gap:8px;}
+  footer a{color:#E89AA8;text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+  .foot-note{margin-top:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);font-size:13.5px;color:#A9B4C2;max-width:640px;line-height:1.7;}
+
+  .pill-note{background:var(--heart-soft);border-radius:12px;padding:16px 20px;font-size:14px;color:#7A2437;margin-top:24px;max-width:760px;}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <div class="wrap">
+    <div class="brand">Audit prepared for <b>Michael Ford</b></div>
+    <nav>
+      <a href="#findings">Findings</a>
+      <a href="#difference">Difference</a>
+      <a href="#headline">Headline</a>
+      <a href="#about">About</a>
+      <a href="#content">Content</a>
+      <a href="#banner">Banner</a>
+      <a href="#gift">Your gift</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-tag">A private LinkedIn review, built for you</div>
+    <h1 class="reveal">You have the strongest story<br>in your category. It is last in line.</h1>
+    <p class="sub reveal d1">I reviewed your LinkedIn profile, your posts, humancoreinno.com, and your public footprint, the way a nonprofit director, a healthcare partner, or a beta user would see it. Three things are pushing your best assets below the fold. I rebuilt the parts that matter.</p>
+    <div class="analyzed reveal d2">
+      <span>LinkedIn profile</span><span>Recent posts</span><span>humancoreinno.com</span><span>MindSwift beta page</span><span>Public footprint</span>
+    </div>
+    <div class="stats reveal d3">
+      <div class="stat"><div class="n">30+ yrs</div><div class="l">in IT, from enterprise support to founder</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">on-device. No accounts, no ads, no cloud tracking</div></div>
+      <div class="stat"><div class="n">100+</div><div class="l">languages recognized, dialect and slang included</div></div>
+      <div class="stat"><div class="n">Live</div><div class="l">MindSwift beta, open now on Google Play</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINDINGS ============ -->
+<section id="findings">
+  <div class="wrap">
+    <div class="eyebrow reveal">What I found</div>
+    <h2 class="reveal">Three places your profile undersells the mission</h2>
+    <p class="sub reveal d1">Nothing here is broken. Each one is a real asset sitting one level below where a first-time visitor would find it.</p>
+    <div class="grid3">
+      <div class="card reveal">
+        <div class="num">01</div>
+        <h3>Your headline reads as a tag cloud</h3>
+        <p>Seven segments, from "AI Product Architect" to "ADA and Community Initiatives" to "AI Practioner." Each keyword fights the others, and the line with the most power, "Creator of MindSwift AI," sits in the middle of the noise. There is also a spelling error in the final word.</p>
+        <div class="why"><b>Why it matters</b>A partner scanning your profile for three seconds currently finds keywords instead of a reason to care. One clear promise beats seven fragments.</div>
+      </div>
+      <div class="card reveal d1">
+        <div class="num">02</div>
+        <h3>Your story opens the About, then disappears</h3>
+        <p>Losing your mother at 13, homelessness, the mean streets: that is the most powerful founder story in the mental health technology space, and you lead with it. But the About then turns into one continuous block with no breaks, no proof points, and no next step. The beta, live on Google Play right now, is never mentioned.</p>
+        <div class="why"><b>Why it matters</b>The story earns attention. Structure keeps it. A visitor moved by your opening has nowhere to go next.</div>
+      </div>
+      <div class="card reveal d2">
+        <div class="num">03</div>
+        <h3>Your proof is real, but it is unassembled</h3>
+        <p>On-device architecture, zero accounts, zero ads, zero cloud tracking, 100+ languages, the Stop the Violence Initiative, partnerships invited for psych services and senior networks: all of this exists across posts and a Projects entry, but never in one place a decision-maker can absorb in thirty seconds.</p>
+        <div class="why"><b>Why it matters</b>Your differentiator is privacy that is architectural, not promised. That is provable. It deserves to be stated as one clean block of facts.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRANSFORMATION ============ -->
+<section id="transformation" style="background:#FFF;">
+  <div class="wrap">
+    <div class="eyebrow reveal">The transformation</div>
+    <h2 class="reveal">What your profile says now, and what it could say</h2>
+    <div class="flow">
+      <div class="flow-row reveal">
+        <div class="tag now">Current</div>
+        <div class="txt">A technologist with many initiative keywords and a mental health app.</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="flow-row reveal">
+        <div class="tag prob">What is missed</div>
+        <div class="txt">The founder who lived the problem, the product that is already live in beta, and the architectural privacy proof that no competitor can copy with a settings toggle.</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="flow-row reveal">
+        <div class="tag new">New</div>
+        <div class="txt">A founder who survived what his users are going through, and built the private, on-device support companion he needed at 13. Beta live.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIFFERENCE ============ -->
+<section id="difference">
+  <div class="wrap">
+    <div class="eyebrow reveal">Your profile, repositioned</div>
+    <h2 class="reveal">Seven changes, side by side</h2>
+    <div class="ba reveal">
+      <div class="ba-row">
+        <div class="k">Positioning</div><div class="b">Keyword list across many causes</div><div class="mid">→</div><div class="a">Founder who lived it, building the tool he needed</div>
+      </div>
+      <div class="ba-row">
+        <div class="k">Headline</div><div class="b">Seven fragments, one typo</div><div class="mid">→</div><div class="a">One story, one product, one proof line</div>
+      </div>
+      <div class="ba-row">
+        <div class="k">About</div><div class="b">One dense block, no next step</div><div class="mid">→</div><div class="a">Story, product facts, partners, beta link</div>
+      </div>
+      <div class="ba-row">
+        <div class="k">Proof</div><div class="b">Scattered across posts</div><div class="mid">→</div><div class="a">On-device, zero accounts, 100+ languages, in one place</div>
+      </div>
+      <div class="ba-row">
+        <div class="k">Message</div><div class="b">What the app has</div><div class="mid">→</div><div class="a">Why it had to be built this way</div>
+      </div>
+      <div class="ba-row">
+        <div class="k">CTA</div><div class="b">None visible</div><div class="mid">→</div><div class="a">Join the beta on Google Play</div>
+      </div>
+      <div class="ba-row">
+        <div class="k">Banner</div><div class="b">No message</div><div class="mid">→</div><div class="a">One promise, three proof words, one status line</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HEADLINES ============ -->
+<section id="headline" style="background:#FFF;">
+  <div class="wrap">
+    <div class="eyebrow reveal">Your new headline</div>
+    <h2 class="reveal">Five options. Each one paste-ready.</h2>
+    <p class="sub reveal d1">Your current headline lists everything you touch. These lead with the one thing nobody else in your category has: you.</p>
+
+    <div class="hl reveal">
+      <div class="idx">1</div>
+      <div>
+        <div class="h-txt serif">Founder, HumanCore Innovations. Creator of MindSwift AI: private, on-device emotional support. No accounts. No ads. No cloud tracking. Beta live on Google Play.</div>
+        <div class="h-idea">Leads with the product and its architectural privacy proof.</div>
+        <div class="h-why"><b>Why it works</b>The privacy facts are your moat. Stated flatly, they do more than any adjective.</div>
+      </div>
+    </div>
+
+    <div class="hl reco reveal d1">
+      <div class="idx">2</div>
+      <div>
+        <div class="reco-badge">Recommended</div>
+        <div class="h-txt serif">I lost my mother at 13 and experienced homelessness. Now I build technology that protects people in their most vulnerable moments. Founder, HumanCore Innovations. Creator of MindSwift AI.</div>
+        <div class="h-idea">Opens with the story only you can tell, then names the work.</div>
+        <div class="h-why"><b>Why it works</b>No competitor can copy this line. In a category of wellness apps, a founder who lived the problem is the strongest differentiator you have, and your own About already proves you are willing to lead with it.</div>
+      </div>
+    </div>
+
+    <div class="hl reveal d2">
+      <div class="idx">3</div>
+      <div>
+        <div class="h-txt serif">30 years in tech, one mission: technology should protect human dignity. Founder of HumanCore Innovations | Creator of MindSwift AI, private support that stays on your device.</div>
+        <div class="h-idea">Pairs experience with the mission statement you already use.</div>
+        <div class="h-why"><b>Why it works</b>Credibility first, mission second, product third. A calmer option for partner-facing conversations.</div>
+      </div>
+    </div>
+
+    <div class="hl reveal d3">
+      <div class="idx">4</div>
+      <div>
+        <div class="h-txt serif">Building the support companion I needed at 13. MindSwift AI: private, on-device, dignity-first. Founder, HumanCore Innovations. Beta open on Google Play.</div>
+        <div class="h-idea">Connects the story directly to the product in one breath.</div>
+        <div class="h-why"><b>Why it works</b>Short, human, and it ends with something a visitor can do today.</div>
+      </div>
+    </div>
+
+    <div class="hl reveal d4">
+      <div class="idx">5</div>
+      <div>
+        <div class="h-txt serif">Privacy-first emotional support that runs entirely on your device. Creator of MindSwift AI | Founder, HumanCore Innovations | 100+ languages, zero tracking, beta live.</div>
+        <div class="h-idea">Positions MindSwift as a category, not an app.</div>
+        <div class="h-why"><b>Why it works</b>"On your device" is a product claim most competitors cannot make. This headline makes it the category.</div>
+      </div>
+    </div>
+
+    <div class="copybox reveal">
+      <div class="copyhead">
+        <span class="lbl">Option 2, ready to paste</span>
+        <button class="copybtn" data-key="headline">Copy headline</button>
+      </div>
+      <div class="inner" id="hl-copy" style="margin-top:14px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow reveal">Your new About</div>
+    <h2 class="reveal">Your story earns the attention. Structure keeps it.</h2>
+    <p class="sub reveal d1">Your current About has everything, in one block. The rewrite keeps every fact, breaks it into breaths, assembles your proof into one place, and ends with the beta link.</p>
+    <div class="pill-note reveal d2">What changed: shorter opening, proof points broken out, partners named, and a clear next step. The beta invite in your Projects section finally makes it into your profile.</div>
+    <div class="copybox reveal d2">
+      <div class="copyhead">
+        <span class="lbl">Complete replacement About</span>
+        <button class="copybtn" data-key="about">Copy About</button>
+      </div>
+      <div class="inner" id="about-copy" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTENT ============ -->
+<section id="content" style="background:#FFF;">
+  <div class="wrap">
+    <div class="eyebrow reveal">Your content opportunity</div>
+    <h2 class="reveal">Five territories only you can own</h2>
+    <div class="themes reveal d1">
+      <div class="theme"><b>The founder story</b><span>What it was to need this tool at 13</span></div>
+      <div class="theme"><b>Design decisions</b><span>Why we removed the login screen</span></div>
+      <div class="theme"><b>Why hotlines fail</b><span>Cold walls of numbers at 2am</span></div>
+      <div class="theme"><b>On-device, explained</b><span>What privacy means architecturally</span></div>
+      <div class="theme"><b>Community proof</b><span>Stop the Violence, Akron, partners</span></div>
+    </div>
+    <p class="sub reveal d2" style="margin-top:34px;">One complete first post, written for you. Built entirely on decisions you have already made public.</p>
+    <div class="post-card reveal d3">
+      <div class="copyhead">
+        <span class="lbl">Your first post, ready to publish</span>
+        <button class="copybtn" data-key="post">Copy post</button>
+      </div>
+      <div class="post-body" id="post-copy" style="margin-top:20px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BANNER ============ -->
+<section id="banner">
+  <div class="wrap">
+    <div class="eyebrow reveal">Your banner</div>
+    <h2 class="reveal">The largest visual on your profile says nothing yet</h2>
+    <p class="sub reveal d1">Your banner currently carries no message. For a founder whose product is a private refuge, the banner should feel like one too: quiet, dark, one promise. The concept: one promise, three proof words, one status line.</p>
+    <div class="banner-mock reveal d2">
+      <div>
+        <div class="bm-kicker">HumanCore Innovations</div>
+        <div class="bm-main">Private support, <em>right on your device.</em></div>
+        <div class="bm-sub">No accounts. No ads. No cloud tracking. MindSwift beta, live on Google Play.</div>
+      </div>
+    </div>
+    <div class="copybox reveal d3">
+      <div class="copyhead">
+        <span class="lbl">Banner copy</span>
+        <button class="copybtn" data-key="banner">Copy banner copy</button>
+      </div>
+      <div class="inner" id="banner-copy" style="margin-top:14px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GIFT ============ -->
+<section id="gift" style="background:#FFF;">
+  <div class="wrap">
+    <div class="eyebrow reveal">Your free gift</div>
+    <h2 class="reveal">Everything on this page is yours to use</h2>
+    <p class="sub reveal d1">No strings attached. Take any of it, paste it, publish it.</p>
+    <div class="gift reveal d2">
+      <div class="g"><div class="tick">✓</div><b>Five headline options</b><span>One recommended direction, all paste-ready, typo-free</span></div>
+      <div class="g"><div class="tick">✓</div><b>A complete new About</b><span>Your story, structured, with the beta link included</span></div>
+      <div class="g"><div class="tick">✓</div><b>One finished LinkedIn post</b><span>Built on design decisions you already made</span></div>
+      <div class="g"><div class="tick">✓</div><b>Positioning diagnosis</b><span>The three gaps, in plain language</span></div>
+      <div class="g"><div class="tick">✓</div><b>Banner concept and copy</b><span>Ready to be designed</span></div>
+      <div class="g"><div class="tick">✓</div><b>Content territories</b><span>Five themes only you can own</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section id="cta">
+  <div class="wrap">
+    <div class="eyebrow reveal" style="color:#F0546E;">One last thing</div>
+    <h2 class="reveal">Let me finish the banner properly</h2>
+    <p class="sub reveal d1">I was already working on the banner so this gift is complete. The only thing I do not want to guess is your visual preference.</p>
+    <div class="cta-card reveal d2">
+      <div class="cta-q">Do you already have <em>brand colors</em> you want me to use?</div>
+      <div style="color:#A9B4C2;font-size:15px;margin-top:16px;">If yes, send them over. If not, just tell me: light or dark, or any colors you personally like.</div>
+      <div class="cta-opts">
+        <span>Send my brand colors</span>
+        <span>Light</span>
+        <span>Dark</span>
+        <span>Surprise me</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h4>Sources used for this review</h4>
+    <div class="src">
+      <a href="#">Your LinkedIn profile and recent posts, supplied as PDF</a>
+      <a href="https://humancoreinno.com/mindswift">humancoreinno.com/mindswift, product page</a>
+      <a href="https://humancoreinno.com/mental-health">humancoreinno.com/mental-health, Stop the Violence Initiative</a>
+      <a href="https://www.linkedin.com/in/michaelfordakron">linkedin.com/in/michaelfordakron, public profile</a>
+    </div>
+    <div class="foot-note">
+      Why I made this: I keep seeing founders with real missions, live products, and stories worth telling, whose profiles do not show any of it clearly. I have made the same mistakes myself. Going through my network, I picked one profile and built this review around it. Yours was the one.
+    </div>
+  </div>
+</footer>
+
+<script>
+var COPY = {
+  headline: "I lost my mother at 13 and experienced homelessness. Now I build technology that protects people in their most vulnerable moments. Founder, HumanCore Innovations. Creator of MindSwift AI.",
+  about: [
+"I build technology for the moments when people have the least left to give.",
+"",
+"I lost my mother at 13. I experienced homelessness, moved state to state, and learned early what it means to navigate life without a safety net. The systems meant to help usually made it harder: long forms, phone trees, cold lists of hotline numbers, someone reading a script.",
+"",
+"Thirty years in IT, supporting enterprise organizations and building my own ventures, did not change what I saw. It gave me the skills to fix it.",
+"",
+"So I founded HumanCore Innovations and built MindSwift AI: a privacy-first, on-device support companion for people in their hardest moments.",
+"",
+"How MindSwift is different:",
+"",
+"No required accounts. No ads. No behavioral profiling.",
+"Everything runs on your device. Conversations are never sent to a remote server.",
+"One tap on Clear Chat, and it is gone.",
+"Understands dialect, slang, and cadence across 100+ languages, because people in distress do not speak in textbook sentences.",
+"Voice-first with oversized, tactile controls for when anxiety makes typing hard.",
+"Time-of-day greetings, on-demand affirmations, and safety-aware routing through our Stop the Violence Initiative.",
+"",
+"MindSwift meets people where they are: emotional stress, financial hardship, housing insecurity, domestic violence, reentry, veteran services, youth challenges, disability support, or simply needing help taking the next step. Empathy first, guidance second.",
+"",
+"We complement licensed care and emergency services. We never replace them.",
+"",
+"I am building this alongside healthcare providers, educators, nonprofits, businesses, and community organizations. If your organization serves people in crisis or seniors who need an accessible lifeline, I would like to talk.",
+"",
+"The MindSwift beta is live on Google Play. My ask is simple: try it, and tell me where it fails the people who need it.",
+"",
+"Technology should protect human dignity, never exploit it."
+  ].join("\n"),
+  post: [
+"A login screen is a small thing, unless you are crying at 2am.",
+"",
+"Before building MindSwift, I studied how every support app starts. Almost all of them begin the same way:",
+"",
+"Create an account.",
+"Accept the terms.",
+"Verify your email.",
+"Answer how you feel on a scale of 1 to 10.",
+"",
+"Now imagine doing that while you are overwhelmed, scared, or ashamed. While your hands are shaking. While you are not sure you even want to be having this conversation.",
+"",
+"That sequence is not support. It is a wall with a form on it.",
+"",
+"So when we engineered MindSwift, we started by deleting things:",
+"",
+"No required account.",
+"No ads.",
+"No cloud tracking. Conversations stay on your device.",
+"One tap on Clear Chat, and it is gone.",
+"",
+"People ask me why on-device matters. Because vulnerability should never be a data point. You cannot be fully honest if you are worried about who is listening.",
+"",
+"I lost my mother at 13 and spent years without a safety net. I know what it is like to need help at the worst possible moment. I built the tool I needed back then.",
+"",
+"The MindSwift beta is open on Google Play. If you try it, tell me one thing we should remove.",
+"",
+"Technology should protect human dignity, never exploit it."
+  ].join("\n"),
+  banner: "Private support, right on your device.\nNo accounts. No ads. No cloud tracking.\nMindSwift beta, live on Google Play."
+};
+
+document.getElementById('hl-copy').textContent = COPY.headline;
+document.getElementById('about-copy').textContent = COPY.about;
+document.getElementById('post-copy').textContent = COPY.post;
+document.getElementById('banner-copy').textContent = COPY.banner;
+
+document.querySelectorAll('.copybtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var key = btn.getAttribute('data-key');
+    var text = COPY[key] || '';
+    function done(){
+      var original = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('done');
+      setTimeout(function(){
+        btn.textContent = original;
+        btn.classList.remove('done');
+      }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  });
+});
+
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, {threshold: 0.12});
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+window.addEventListener('scroll', function(){
+  var h = document.documentElement;
+  var pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+});
+</script>
+</body>
+</html>
